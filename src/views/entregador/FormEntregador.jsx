@@ -44,8 +44,8 @@ export default function FormEntregador() {
         }
 
         axios.post("http://localhost:8080/api/entregador", entregadorRequest)
-        .then(res => console.log("Entregador cadastrado com sucesso"))
-        .catch(err => console.log("erro ao cadastrar entregador " + err))
+            .then(res => console.log("Entregador cadastrado com sucesso"))
+            .catch(err => console.log("erro ao cadastrar entregador " + err))
     }
 
     return (
@@ -131,9 +131,14 @@ export default function FormEntregador() {
                                 <FormField
                                     control={Input}
                                     label='Fone Fixo'
-                                    value={foneFixo}
-                                    onChange={(e) => setFoneFixo(e.target.value)}
-                                />
+                                >
+                                    <InputMask
+                                        placeholder='(DDD) 9999-9999'
+                                        mask="(99) 9999-9999"
+                                        value={foneFixo}
+                                        onChange={(e) => setFoneFixo(e.target.value)}
+                                    />
+                                </FormField>
 
                                 <FormField
                                     type="number"
