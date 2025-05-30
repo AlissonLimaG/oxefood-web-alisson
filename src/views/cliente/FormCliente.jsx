@@ -1,47 +1,57 @@
+/* eslint-disable eqeqeq */
 import InputMask from 'comigo-tech-react-input-mask';
-import React, { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button, Container, Divider, Form, Icon } from 'semantic-ui-react';
 import MenuSistema from '../../MenuSistema';
-import axios from 'axios';
+import { Link, useLocation } from 'react-router-dom';
+import ClienteService from '../../services/ClienteService';
+import { formatarData } from '../../utils';
 
 export default function FormCliente() {
+    const { state } = useLocation();
+    const [clientData, setClientData] = useState({
+        id: null,
+        nome: '',
+        cpf: '',
+        dataNascimento: '',
+        foneCelular: '',
+        foneFixo: ''
+    });
+    
+    function salvarCliente() {
+        ClienteService.salvar(clientData);
+    }
 
-    const [nome, setNome] = useState();
-    const [cpf, setCpf] = useState();
-    const [dataNascimento, setDataNascimento] = useState();
-    const [foneCelular, setFoneCelular] = useState();
-    const [foneFixo, setFoneFixo] = useState();
+    const preencheDadosDoCliente = async (idCliente) => {
+        const response = await ClienteService.obterPorId(idCliente);
+        response.data.dataNascimento = formatarData(response.data.dataNascimento);
+        setClientData(response.data);
+    }
 
-    function salvar() {
+    useEffect(() => {
+        if (state != null && state.id != null) {
+            preencheDadosDoCliente(state.id);
+        }
+    }, [state])
 
-		let clienteRequest = {
-		     nome: nome,
-		     cpf: cpf,
-		     dataNascimento: dataNascimento,
-		     foneCelular: foneCelular,
-		     foneFixo: foneFixo
-		}
-	
-		axios.post("http://localhost:8080/api/cliente", clienteRequest)
-		.then((response) => {
-		     console.log('Cliente cadastrado com sucesso.')
-		})
-		.catch((error) => {
-		     console.log('Erro ao incluir o um cliente.')
-		})
-	}
+
 
     return (
 
         <div>
 
-            <MenuSistema tela={'cliente'}/>
+            <MenuSistema tela={'cliente'} />
 
             <div style={{ marginTop: '3%' }}>
 
                 <Container textAlign='justified' >
 
-                    <h2> <span style={{ color: 'darkgray' }}> Cliente &nbsp;<Icon name='angle double right' size="small" /> </span> Cadastro </h2>
+                    {clientData.id === null &&
+                        <h2> <span style={{ color: 'darkgray' }}> Cliente &nbsp;<Icon name='angle double right' size="small" /> </span> Cadastro</h2>
+                    }
+                    {clientData.id != null &&
+                        <h2> <span style={{ color: 'darkgray' }}> Cliente &nbsp;<Icon name='angle double right' size="small" /> </span> Alteração</h2>
+                    }
 
                     <Divider />
 
@@ -56,8 +66,8 @@ export default function FormCliente() {
                                     fluid
                                     label='Nome'
                                     maxLength="100"
-                                    value={nome}
-                                    onChange={(e) => setNome(e.target.value)}
+                                    value={clientData.nome}
+                                    onChange={(e) => setClientData({ ...clientData, nome: e.target.value })}
                                 />
 
                                 <Form.Input
@@ -67,8 +77,8 @@ export default function FormCliente() {
                                     <InputMask
                                         required
                                         mask="999.999.999-99"
-                                        value={cpf}
-                                        onChange={(e) => setCpf(e.target.value)}
+                                        value={clientData.cpf}
+                                        onChange={(e) => setClientData({ ...clientData, cpf: e.target.value })}
                                     />
                                 </Form.Input>
 
@@ -82,8 +92,8 @@ export default function FormCliente() {
                                     width={6}>
                                     <InputMask
                                         mask="(99) 9999.9999"
-                                        value={foneCelular}
-                                        onChange={(e) => setFoneCelular(e.target.value)}
+                                        value={clientData.foneCelular}
+                                        onChange={(e) => setClientData({ ...clientData, foneCelular: e.target.value })}
                                     />
                                 </Form.Input>
 
@@ -93,8 +103,8 @@ export default function FormCliente() {
                                     width={6}>
                                     <InputMask
                                         mask="(99) 9999-9999"
-                                        value={foneFixo}
-                                        onChange={(e) => setFoneFixo(e.target.value)}
+                                        value={clientData.foneFixo}
+                                        onChange={(e) => setClientData({ ...clientData, foneFixo: e.target.value })}
                                     />
                                 </Form.Input>
 
@@ -107,8 +117,8 @@ export default function FormCliente() {
                                         mask="99/99/9999"
                                         maskChar={null}
                                         placeholder="Ex: 20/03/1985"
-                                        value={dataNascimento}
-                                        onChange={(e) => setDataNascimento(e.target.value)}
+                                        value={clientData.dataNascimento}
+                                        onChange={(e) => setClientData({ ...clientData, dataNascimento: e.target.value })}
                                     />
                                 </Form.Input>
 
@@ -118,17 +128,20 @@ export default function FormCliente() {
 
                         <div style={{ marginTop: '4%' }}>
 
-                            <Button
-                                type="button"
-                                inverted
-                                circular
-                                icon
-                                labelPosition='left'
-                                color='orange'
-                            >
-                                <Icon name='reply' />
-                                Voltar
-                            </Button>
+                            <Link to={'/list-cliente'}>
+                                <Button
+                                    type="button"
+                                    inverted
+                                    circular
+                                    icon
+                                    labelPosition='left'
+                                    color='orange'
+                                >
+                                    <Icon name='reply' />
+                                    Voltar
+                                </Button>
+                            </Link>
+
 
                             <Button
                                 inverted
@@ -137,7 +150,7 @@ export default function FormCliente() {
                                 labelPosition='left'
                                 color='blue'
                                 floated='right'
-                                onClick={salvar}
+                                onClick={salvarCliente}
                             >
                                 <Icon name='save' />
                                 Salvar

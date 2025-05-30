@@ -2,10 +2,14 @@ import InputMask from "comigo-tech-react-input-mask/lib/react-input-mask.develop
 import { Button, Container, Divider, Form, FormField, FormGroup, FormRadio, Icon, Input, Select } from "semantic-ui-react";
 import estadosBrasil from "./estados";
 import MenuSistema from "../../MenuSistema";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
+import { Link, useLocation } from "react-router-dom";
 
 export default function FormEntregador() {
+    
+    const { state } = useLocation();
+    const [idEntregador, setIdEntregador] = useState();
     const [nome, setNome] = useState();
     const [cpf, setCpf] = useState();
     const [rg, setRg] = useState();
@@ -22,6 +26,16 @@ export default function FormEntregador() {
     const [enderecoCep, setEnderecoCep] = useState();
     const [enderecoUf, setEnderecoUf] = useState();
     const [ativo, setAtivo] = useState(true);
+
+    function formatarData(dataParam) {
+
+        if (dataParam === null || dataParam === '' || dataParam === undefined) {
+            return ''
+        }
+
+        let arrayData = dataParam.split('-');
+        return arrayData[2] + '/' + arrayData[1] + '/' + arrayData[0];
+    }
 
     function salvar() {
         let entregadorRequest = {
@@ -43,10 +57,45 @@ export default function FormEntregador() {
             ativo: ativo
         }
 
-        axios.post("http://localhost:8080/api/entregador", entregadorRequest)
-            .then(res => console.log("Entregador cadastrado com sucesso"))
-            .catch(err => console.log("erro ao cadastrar entregador " + err))
+        console.log(enderecoUf)
+
+        if (idEntregador != null) {
+
+            axios.put("http://localhost:8080/api/entregador/" + idEntregador, entregadorRequest)
+                .then((response) => console.log('entregador alterado com sucesso.'))
+                .catch((error) => console.log('Erro ao alter um entregador.'))
+        } else {
+
+            axios.post("http://localhost:8080/api/entregador", entregadorRequest)
+                .then((response) => console.log('entregador cadastrado com sucesso.'))
+                .catch((error) => console.log('Erro ao incluir o entregador.'))
+        }
     }
+
+    useEffect(() => {
+        if (state != null && state.id != null) {
+            axios.get("http://localhost:8080/api/entregador/" + state.id)
+                .then((response) => {
+                    setIdEntregador(response.data.id)
+                    setNome(response.data.nome)
+                    setCpf(response.data.cpf)
+                    setRg(response.data.rg)
+                    setDataNascimento(formatarData(response.data.dataNascimento))
+                    setFoneCelular(response.data.foneCelular)
+                    setFoneFixo(response.data.foneFixo)
+                    setQtdEntregasRealizadas(response.data.qtdEntregasRealizadas)
+                    setValorFrete(response.data.valorFrete)
+                    setEnderecoRua(response.data.enderecoRua)
+                    setEnderecoComplemento(response.data.enderecoComplemento)
+                    setEnderecoNumero(response.data.enderecoNumero)
+                    setEnderecoBairro(response.data.enderecoBairro)
+                    setEnderecoCidade(response.data.enderecoCidade)
+                    setEnderecoCep(response.data.enderecoCep)
+                    setEnderecoUf(response.data.enderecoUf)
+                    setAtivo(response.data.ativo)
+                })
+        }
+    }, [state])
 
     return (
         <div>
@@ -255,17 +304,19 @@ export default function FormEntregador() {
 
                     <div style={{ marginTop: '4%' }}>
 
-                        <Button
-                            type="button"
-                            inverted
-                            circular
-                            icon
-                            labelPosition='left'
-                            color='orange'
-                        >
-                            <Icon name='reply' />
-                            Voltar
-                        </Button>
+                        <Link to={"/list-entregador"}>
+                            <Button
+                                type="button"
+                                inverted
+                                circular
+                                icon
+                                labelPosition='left'
+                                color='orange'
+                            >
+                                <Icon name='reply' />
+                                Voltar
+                            </Button>
+                        </Link>
 
                         <Button
                             inverted

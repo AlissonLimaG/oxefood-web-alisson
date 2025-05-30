@@ -11,3 +11,13 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+.infoContainer{
+    padding: 1rem;
+    background-color: whitesmoke;
+}
+
+.content{
+  max-height: 400px;
+  overflow-y: scroll;
+}

@@ -1,0 +1,13 @@
+.enderecosContainer{
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+.clienteEnderecoBubbleInfo{
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    padding: 8px;
+    box-shadow: 0 0 4px gray;
+    border-radius: 6px;
+}
