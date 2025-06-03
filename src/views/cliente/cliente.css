@@ -11,3 +11,10 @@
     box-shadow: 0 0 4px gray;
     border-radius: 6px;
 }
+
+.buttonsContainer{
+    width: 100%;
+    display: flex;
+    justify-content: end;
+    column-gap: 8px;
+}
